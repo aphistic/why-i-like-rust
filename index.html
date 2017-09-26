@@ -18,6 +18,7 @@
 						<li class="fragment">Guaranteed Memory Safety</li>
 						<li class="fragment">Threads Without Data Races</li>
 						<li class="fragment">Minimal Runtime (No GC!)</li>
+						<li class="fragment">Efficient C Bindings</li>
 					</ul>
 				</section>
 				<section>
@@ -229,7 +230,7 @@ my_num = 42;
 						<h2>Memory Safety</h2>
 					</section>
 					<section>
-						<p>How Rust To Guarantees Safety</p>
+						<p>How Rust Guarantees Safety</p>
 						<div class="fragment">
 							<ul>
 								<li>Ownership</li>
@@ -242,56 +243,106 @@ my_num = 42;
 						<p>Ownership</p>
 						<pre><code class="rust" data-trim>
 // v1 "owns" the Vec instance
-let mut v1 = Vec::new();
+let mut v1 = Vec::new(); // New Vec(tor)
 v1.push(1);
 
-// v2 now owns the Vec instance
+// Ownership of v1's Vec moved to v2
 let mut v2 = v1;
 v2.push(2);
 
+// Compile-time checking causes error
 v1.push(3);
+						</code></pre>
+						<img src="img/safety_ownership.png">
+					</section>
+					<section>
+						<p>Borrowing</p>
+						<pre><code class="rust" data-trim>
+// v1 "owns" the Vec instance
+let mut v1 = Vec::new();
+v1.push(1);
 
+{
+	// v2 "borrows" a mutable reference to v1
+	let v2 = &mut v1;
+	v2.push(2);
+	// v2 and its borrow fall out of scope
+}
+
+// v1 has full ownership back
+v1.push(3);
 						</code></pre>
 					</section>
 					<section>
-						How does it guarantee?
-					</section>
-					<section>
-						Data race
-					</section>
-					<section>
-						Null dereference
+						<p>Lifetimes</p>
+						<pre><code class="rust" data-trim>
+
+						</code></pre>
 					</section>
 				</section>
 
 				<section>
-					Dependency Management
+					<section>
+						<h2>Tooling</h2>
+					</section>
+					<section>
+						<p>Cargo</p>
+					</section>
+					<section>
+						<p>Rustup</p>
+					</section>
+					<section>
+						<p>C Library in Rust</p>
+					</section>
 				</section>
 
-				<!-- Documentation Section -->
 				<section>
 					<section>
 						<h2>Documentation</h2>
 					</section>
 					<section>
-						<h3>"The Book"</h3>
+						<p>"The Book"</p>
 						<p><a href="https://doc.rust-lang.org/book/">https://doc.rust-lang.org/book/</a></p>
 						<p><img src="img/doc_book.png"></p>
 					</section>
 					<section>
-						<h3>API Documentation</h3>
+						<p>API Documentation</p>
 						<p><a href="https://doc.rust-lang.org/std/">https://doc.rust-lang.org/std/</a></p>
 						<p><img src="img/doc_stdlib.png"></p>
 					</section>
 					<section>
-						<h3>Compiler Errors</h3>
+						<p>Compiler Errors</p>
 						<p><img src="img/doc_compiler.png"></p>
 					</section>
 				</section>
 
-				<!-- Community Section -->
 				<section>
-					<h2>Community</h2>
+					<section>
+						<h2>Community</h2>
+					</section>
+					<section>
+						Mozilla, servo (large project built with rust)
+					</section>
+					<section>
+						IRC
+					</section>
+					<section>
+						Diverse
+					</section>
+					<section>
+						Community drives project
+					</section>
+					<section>
+						<p>Rustaceans!</p>
+					</section>
+				</section>
+
+				<section>
+					<h2>Questaceans?</h2>
+					<ul>
+						<li>@aphistic</li>
+						<li>https://github.com/aphistic</li>
+					</ul>
 				</section>
 			</div>
 		</div>
