@@ -102,8 +102,8 @@ let my_nothing = Option::None;
 						<div class="fragment">
 							<p>To Error Handling.</p>
 							<pre><code class="rust" data-trim>
-enum Result&lt;O, E&gt; {
-	Ok(O), // Ok contains the generic type O
+enum Result&lt;T, E&gt; {
+	Ok(T), // Ok contains the generic type T
 	Err(E), // Err contains the generic type E
 }
 
@@ -165,6 +165,7 @@ let num_str = match my_num {
 	1 =&gt; "one",
 	2 =&gt; "two",
 	3 =&gt; "three",
+	4 | 5 =&gt; "four or five",
 	// No handler for _, meaning "all others"
 };
 						</code></pre>
@@ -421,8 +422,10 @@ crate-type = ["dylib"]
 
 				<section>
 					<h2>Questaceans?</h2>
-					<p>@aphistic</p>
-					<p>https://github.com/aphistic</p>
+					<ul>
+						<li>@aphistic</li>
+						<li>https://github.com/aphistic</li>
+					</ul>
 				</section>
 			</div>
 		</div>
@@ -438,7 +441,12 @@ crate-type = ["dylib"]
 					{ src: "lib/js/classList.js", condition: function() { return !document.body.classList; } },
 					{ src: "plugin/markdown/marked.js", condition: function() { return !!document.querySelector("[data-markdown]"); } },
 					{ src: "plugin/markdown/markdown.js", condition: function() { return !!document.querySelector("[data-markdown]"); } },
-					{ src: "plugin/highlight/highlight.js", async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
+					{ src: "plugin/highlight/highlight.js", async: true, callback: function() { 
+						hljs.configure({
+							tabReplace: '    '
+						});
+						hljs.initHighlightingOnLoad();
+					} },
 					{ src: "plugin/notes/notes.js", async: true },
 					{ src: "plugin/math/math.js", async: true }
 				]
