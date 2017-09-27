@@ -2,7 +2,7 @@
 	<head>
 		<link rel="stylesheet" href="css/reveal.css">
 		<link rel="stylesheet" href="css/theme/black.css">
-		<link rel="stylesheet" href="lib/css/zenburn.css">
+		<link rel="stylesheet" href="lib/css/tomorrow-night-eighties.css">
 	</head>
 	<body>
 		<div class="reveal">
@@ -18,6 +18,7 @@
 						<li class="fragment">Guaranteed Memory Safety</li>
 						<li class="fragment">Threads Without Data Races</li>
 						<li class="fragment">Minimal Runtime (No GC!)</li>
+						<li class="fragment">Efficient C Bindings</li>
 					</ul>
 				</section>
 				<section>
@@ -47,6 +48,7 @@ fn main() {
 					<section>
 						<p>Not Your Typical Enum</p>
 						<pre><code class="c" data-trim>
+// Typical C Enum
 typedef enum {
 	RED,	// = 0
 	BLUE,	// = 1
@@ -59,6 +61,7 @@ color background = BLUE;
 					<section>
 						<p>You Can Use Them The Same Way</p>
 						<pre><code class="rust" data-trim>
+// Basic Rust Enum
 enum Color {
 	Red,
 	Blue,
@@ -75,15 +78,16 @@ struct Ipv4Addr { /* IPv4 data */ }
 struct Ipv6Addr { /* IPv6 data */ }
 
 enum IpAddr {
-	V4(Ipv4Addr), // IpAddr::V4 with an Ipv4Addr instance
-	V6(Ipv6Addr), // IpAddr::V6 with an Ipv6Addr instance
+	V4(Ipv4Addr), // IpAddr::V4 with Ipv4Addr instance
+	V6(Ipv6Addr), // IpAddr::V6 with Ipv6Addr instance
 }
 
-// Bind value IpAddr::V4 with an associated IPv4 (127.0.0.1) to v4
-let v4 = IpAddr::V4(Ipv4Addr::new(127, 0, 0, 1));
+// Bind IpAddr::V4 with an associated IPv4 (127.0.0.1) to ip4
+let ip4 = IpAddr::V4(Ipv4Addr::new(127, 0, 0, 1));
+let ip4_2 = IpAddr::V4(Ipv4Addr::new(10, 10, 10, 10));
 
-// Bind value IpAddr::V6 with an associated IPv6 (::1) to v6
-let v6 = IpAddr::V6(Ipv6Addr::new(0, 0, 0, 0, 0, 0, 0, 1));
+// Bind IpAddr::V6 with an associated IPv6 (::1) to ip6
+let ip6 = IpAddr::V6(Ipv6Addr::new(0, 0, 0, 0, 0, 0, 0, 1));
 						</code></pre>
 					</section>
 					<section>
@@ -98,12 +102,16 @@ let my_nothing = Option::None;
 						<div class="fragment">
 							<p>To Error Handling.</p>
 							<pre><code class="rust" data-trim>
-fn my_func(fail: bool) -&gt; Result&lt;i32, &amp;str&gt; {
-	if fail {
-		return Err("this could be a struct too!");
-	}
-	return Ok(42);
+enum Result&lt;O, E&gt; {
+	Ok(O), // Ok contains the generic type O
+	Err(E), // Err contains the generic type E
 }
+
+// Inside a function:
+if fail {
+	return Result::Err("this could be a struct too!");
+}
+return Result::Ok(42);
 							</code></pre>
 						</div>
 					</section>
@@ -122,24 +130,21 @@ if my_num == 1 {
 	println!("one");
 } else if my_num == 2 {
 	println!("two");
-} else if my_num == 3 {
-	println!("three");
 } else {
 	println!("WAT?!");
 }
 							</code></pre>
 						</div>
-					</section>
-					<section>
+						<div class="fragment">
 						<p>Becomes This.</p>
 						<pre><code class="rust" data-trim>
 match my_num {
 	1 =&gt; println!("one"),
 	2 =&gt; println!("two"),
-	3 =&gt; println!("three"),
 	_ =&gt; println!("WAT?!"),
 }
 						</code></pre>
+						</div>
 					</section>
 					<section>
 						<p>They Can Be Used For Assignments</p>
@@ -149,7 +154,7 @@ let num_str = match my_num {
 	2 =&gt; "two",
 	3 =&gt; "three",
 	4 | 5 =&gt; "four or five",
-	_ =&gt; "something else",
+	_ =&gt; "anything else",
 };
 						</code></pre>
 					</section>
@@ -172,8 +177,8 @@ let num_str = match my_num {
 // Result&lt;IpAddr, AddrParseError&gt; enum value
 
 match IpAddr::from_str("not an ip") {
-	Ok(ip) =&gt; println!("Got an IP! It is {}", ip),
-	Err(_) =&gt; println!("Not an IP :("),
+	Result::Ok(ip) =&gt; println!("Got an IP! It's {}", ip),
+	Result::Err(_) =&gt; println!("Not an IP :("),
 }
 						</code></pre>
 					</section>
@@ -191,11 +196,15 @@ match my_num {
 						<pre><code class="rust" data-trim>
 let x = 4;
 let y = false;
+let z: u8 = rand::random();
 
+// Prints "no" even though x is 4 because y is false
 match x {
+	3 if z &gt; 5 =&gt; println!("maybe"),
 	4 | 5 if y =&gt; println!("yes"),
 	_ =&gt; println!("no"),
 }
+
 						</code></pre>
 					</section>
 				</section>
@@ -205,7 +214,7 @@ match x {
 						<h2>Mutability</h2>
 					</section>
 					<section>
-						<p>Everything's Immutable!</p>
+						<p>Everything's <em>Immutable!</em></p>
 						<pre><code class="rust" data-trim>
 let my_num = 12;
 
@@ -229,7 +238,7 @@ my_num = 42;
 						<h2>Memory Safety</h2>
 					</section>
 					<section>
-						<p>How Rust To Guarantees Safety</p>
+						<p>How Rust Guarantees Safety</p>
 						<div class="fragment">
 							<ul>
 								<li>Ownership</li>
@@ -242,56 +251,178 @@ my_num = 42;
 						<p>Ownership</p>
 						<pre><code class="rust" data-trim>
 // v1 "owns" the Vec instance
-let mut v1 = Vec::new();
+let mut v1 = Vec::new(); // New Vec(tor)
 v1.push(1);
 
-// v2 now owns the Vec instance
+// Ownership of v1's Vec moved to v2
 let mut v2 = v1;
 v2.push(2);
 
+// Compile-time checking causes error
 v1.push(3);
+						</code></pre>
+						<img src="img/safety_ownership.png">
+					</section>
+					<section>
+						<p>Borrowing</p>
+						<pre><code class="rust" data-trim>
+// v1 "owns" the Vec instance
+let mut v1 = Vec::new();
+v1.push(1);
 
+{
+	// v2 "borrows" a mutable reference to v1
+	let v2 = &amp;mut v1;
+	v2.push(2);
+	// v2 and its borrow fall out of scope
+}
+
+// v1 has full ownership back
+v1.push(3);
 						</code></pre>
 					</section>
 					<section>
-						How does it guarantee?
+						<p>Lifetimes</p>
+						<pre><code class="rust" data-trim>
+// <'a> declares a lifetime named 'a that lives AT LEAST as
+// long as struct Foo lives.
+struct Foo&lt;'a&gt; {
+
+	// &'a says the i32 being referenced by x must live
+	// AT LEAST as long as struct Foo
+	x: &'a i32,
+
+}
+						</code></pre>
 					</section>
 					<section>
-						Data race
-					</section>
-					<section>
-						Null dereference
+						<p>Ownership, Borrowing and Lifetimes Are All Checked At Compile Time!</p>
+						<p>(The Infamous "Borrow Checker")</p>
 					</section>
 				</section>
 
 				<section>
-					Dependency Management
+					<section>
+						<h2>Tooling</h2>
+					</section>
+					<section>
+						<h4>Rustup</h4>
+						<p>Manages Multiple Rust Toolchains</p>
+						<pre><code class="bash" data-trim>
+$ rustup show
+installed toolchains
+--------------------
+stable-x86_64-unknown-linux-gnu
+
+installed targets for active toolchain
+--------------------------------------
+arm-linux-androideabi
+x86_64-unknown-linux-gnu
+
+active toolchain
+----------------
+stable-x86_64-unknown-linux-gnu (default)
+rustc 1.20.0 (f3d6973f4 2017-08-27)
+						</code></pre>
+					</section>
+					<section>
+						<h4>Cargo</h4>
+						<p>Tool For Common Actions</p>
+						<pre><code class="bash" data-trim>
+$ cargo new --bin rust_example
+$ cargo build
+$ cargo test
+						</code></pre>
+						<p>Also Handles Dependencies</p>
+						<pre><code class="bash" data-trim>
+$ cargo search tokio
+	Updating registry `https://github.com/rust-lang/...
+tokio (0.0.0)          A fast, async, IO framework
+tokio-imap (0.3.0)     Tokio-based IMAP protocol (client...
+...
+						</code></pre>
+					</section>
+					<section>
+						<h4>Call Rust From Other Languages</h4>
+						<pre><code class="rust" data-trim>
+// No name mangling and make my_function callable from C
+#[no_mangle]
+pub extern fn my_function() {
+}
+						</code></pre>
+						<p>Configure Project To Build "dylib"</p>
+						<pre><code class="toml"  data-trim>
+[lib]
+name = "foo"
+# Tell Cargo/Rust to build libfoo.so, foo.dll or libfoo.dylib
+# depending on the platform
+crate-type = ["dylib"]
+						</code></pre>
+					</section>
 				</section>
 
-				<!-- Documentation Section -->
 				<section>
 					<section>
 						<h2>Documentation</h2>
 					</section>
 					<section>
-						<h3>"The Book"</h3>
+						<p>"The Book"</p>
 						<p><a href="https://doc.rust-lang.org/book/">https://doc.rust-lang.org/book/</a></p>
 						<p><img src="img/doc_book.png"></p>
 					</section>
 					<section>
-						<h3>API Documentation</h3>
+						<p>API Documentation</p>
 						<p><a href="https://doc.rust-lang.org/std/">https://doc.rust-lang.org/std/</a></p>
 						<p><img src="img/doc_stdlib.png"></p>
 					</section>
 					<section>
-						<h3>Compiler Errors</h3>
+						<p>Compiler Errors</p>
 						<p><img src="img/doc_compiler.png"></p>
 					</section>
 				</section>
 
-				<!-- Community Section -->
 				<section>
-					<h2>Community</h2>
+					<section>
+						<h2>Community</h2>
+					</section>
+					<section>
+						<h4>Mozilla Is A Guiding Force</h4>
+						<img src="img/community_servo.png">
+					</section>
+					<section>
+						<h4>Large IRC Community</h4>
+						<ul>
+							<li>irc.mozilla.org</li>
+							<li>#rust-beginners</li>
+							<li>#rust</li>
+						</ul>
+						<p><img src="img/community_irc.png"></p>
+					</section>
+					<section>
+						<h4>Efforts Toward Diversity</h4>
+						<img src="img/community_diversity.png">
+					</section>
+					<section>
+						<h4>Team Listens To Community Feedback</h4>
+						<ul>
+							<li>Yearly "State of Rust" Survey</li>
+							<li>GitHub Issues</li>
+							<li>IRC Interactions</li>
+							<li>Active On Twitter</li>
+						</ul>
+					</section>
+					<section>
+						<h4>Rustaceans!</h4>
+						<p>Who can disagree with such a great name for users?</p>
+						<img src="img/ferris_scaled.png">
+						<p>Ferris the Crab</p>
+					</section>
+				</section>
+
+				<section>
+					<h2>Questaceans?</h2>
+					<p>@aphistic</p>
+					<p>https://github.com/aphistic</p>
 				</section>
 			</div>
 		</div>
