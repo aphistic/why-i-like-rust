@@ -437,6 +437,11 @@ crate-type = ["dylib"]
 				controls: false,
 				history: true,
 
+				keyboard: {
+					39: "navigateNext",
+					37: "navigatePrev"
+				},
+
 				dependencies: [
 					{ src: "lib/js/classList.js", condition: function() { return !document.body.classList; } },
 					{ src: "plugin/markdown/marked.js", condition: function() { return !!document.querySelector("[data-markdown]"); } },
